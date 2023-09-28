@@ -11,7 +11,7 @@ jobs:
         with: 
           repository: yuki-dl/shift-schedule-savior-p
           token: ${{ secrets.GITHUB_TOKEN }}
-          path: src
+          path: pages
           ref: "gh-pages"
 
       - name: Install Rust toolchain
