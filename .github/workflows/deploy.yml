@@ -1,6 +1,8 @@
 name: Deploy Github Pages
 
-on: [workflow_dispatch]
+on:
+  push:
+    branches: ['main']
 
 jobs:
   deploy:
@@ -8,11 +10,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-        with: 
-          repository: yuki-dl/shift-schedule-savior-p
-          token: ${{ secrets.ORG_GITHUB_PAT }}
-          path: pages
-          ref: "gh-pages"
 
       - name: Install Rust toolchain
         uses: actions-rs/toolchain@v1.0.6
