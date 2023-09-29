@@ -28,7 +28,8 @@ jobs:
           version: "latest"
 
       - name: Build web pages
-      - run: trunk build --release --public-url shift-schedule-savior
+        run: trunk build --release --public-url shift-schedule-savior
+        
       - run: cp -r ./dist/ ./public/
 
       - name: Deploy to Github Pages
