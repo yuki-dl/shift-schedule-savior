@@ -2,18 +2,6 @@ use chrono::{
     DateTime, Datelike, Local, NaiveDate, Weekday,
 };
 
-pub fn get_weekday_arr(month: &String) -> Vec<String> {
-    let month = month.parse::<u32>().unwrap();
-    let year = get_now_year();
-
-    let days = days_in_month(year, month);
-    let dates = (1..=days)
-        .map(|d| NaiveDate::from_ymd_opt(year, month, d).unwrap())
-        .map(|d| get_weekday(d.weekday()))
-        .collect::<Vec<_>>();
-    dates
-}
-
 pub fn get_year_month() -> (String, String) {
     let local: DateTime<Local> = Local::now();
     let mut year = local.year();
@@ -29,6 +17,18 @@ pub fn get_year_month() -> (String, String) {
     (year.to_string(), month.to_string())
 }
 
+pub fn get_date(year: &String, month: &String) -> (u32, Vec<String>) {
+    let month = month.parse::<u32>().unwrap();
+    let year = year.parse::<i32>().unwrap();
+
+    let days = days_in_month(year, month);
+    let weekdays = (1..=days)
+        .map(|d| NaiveDate::from_ymd_opt(year, month, d).unwrap())
+        .map(|d| get_weekday(d.weekday()))
+        .collect::<Vec<_>>();
+    (days, weekdays)
+}
+
 fn get_weekday(w: Weekday) -> String {
     match w {
         Weekday::Mon => "月".to_owned(),
@@ -41,12 +41,11 @@ fn get_weekday(w: Weekday) -> String {
     }
 }
 
-fn get_now_year() -> i32 {
-    let local: DateTime<Local> = Local::now();
-    return local.year()
-}
-
 fn days_in_month(year: i32, month: u32) -> u32 {
+    if month == 2 {
+        let days = if is_leap(year) {29} else {28};
+        return days;
+    }
     let date = NaiveDate::from_ymd_opt(year, month, 1).unwrap();
     let next_month = if month == 12 {
         NaiveDate::from_ymd_opt(year+1, 1, 1).unwrap()
@@ -54,4 +53,14 @@ fn days_in_month(year: i32, month: u32) -> u32 {
         NaiveDate::from_ymd_opt(year, month+1, 1).unwrap()
     };
     (next_month - date).num_days() as u32
+}
+
+fn is_leap(year: i32) -> bool {
+    if year % 4 != 0 {
+        false
+    } else if year % 100 == 0 && year % 400 != 0 {
+        false
+    } else {
+        true
+    }
 }

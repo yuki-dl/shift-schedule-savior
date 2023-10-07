@@ -36,11 +36,11 @@ pub fn Front<'a>(
             div {
                 class: "flex min-h-full flex-col items-center justify-center",
                 h1 {
-                    class: "text-2xl mb-10 text-center font-medium text-gray-900 dark:text-white",
+                    class: "text-2xl mb-10 text-center font-medium text-gray-900 dark:text-gray-300",
                     "{year}年{month}月度 人員計画表"
                 }
                 div {
-                    class: "flex flex-col items-center justify-center group",
+                    class: "flex flex-col items-center justify-center",
                     InputEmployeeNum { employee_num: employee_num.to_string(), onchange: move |evt| onchange_employee_num.call(evt) }
                     InputMonth { month: month.to_string(), onchange: move |evt| onchange_month.call(evt) }
                     NextButton {
@@ -57,13 +57,14 @@ pub fn Front<'a>(
 pub fn Back(
     cx: Scope,
     employee_num: String,
-    month: String,
+    days: u32, 
+    weekday_arr: Vec<String>
 ) -> Element {
     let is_generated = use_state(&cx, || false);
     let open_tab = use_state(&cx, || 1);
 
-    // [morning, afternoon, evening, full1, full2]
-    let input_vec = use_ref(&cx, || vec!["".to_string(); 5]);
+    // [morning, afternoon, evening]
+    let input_vec = use_ref(&cx, || vec!["".to_string(); 3]);
     let input_vec_refcell = input_vec.read();
     
     cx.render(rsx!(
@@ -98,8 +99,6 @@ pub fn Back(
                             onchange_morning: move |evt: FormEvent| input_vec.with_mut(|i| i[0] = evt.value.clone()),
                             onchange_afternoon: move |evt: FormEvent| input_vec.with_mut(|i| i[1] = evt.value.clone()),
                             onchange_evening: move |evt: FormEvent| input_vec.with_mut(|i| i[2] = evt.value.clone()),
-                            onchange_f1: move |evt: FormEvent| input_vec.with_mut(|i| i[3] = evt.value.clone()),
-                            onchange_f2: move |evt: FormEvent| input_vec.with_mut(|i| i[4] = evt.value.clone()),
                         }
                     }
                 }    
@@ -108,7 +107,8 @@ pub fn Back(
                 class: if open_tab.get().clone() == 2 {"block"} else {"hidden"},
                 EmployeeTable {
                     employee_num: employee_num.to_string(),
-                    month: month.to_string(),
+                    days: *days,
+                    weekday_arr: weekday_arr.to_vec(),
                     required_people: input_vec_refcell.to_vec(),
                     is_generated: is_generated.get().clone(),
                     onclick: move |_| {
@@ -116,7 +116,7 @@ pub fn Back(
                     },
                     onreset: move |_| {
                         is_generated.set(false);
-                        input_vec.with_mut(|i| *i = vec!["".to_string(); 5]);
+                        input_vec.with_mut(|i| *i = vec!["".to_string(); 3]);
                     },
                 }
             }

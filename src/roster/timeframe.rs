@@ -35,4 +35,13 @@ impl TimeFrame {
         };
         new
     }
+    pub fn to_signal(&self) -> u8 {
+        match self {
+            TimeFrame::Morning => 2,
+            TimeFrame::Afternoon => 3,
+            TimeFrame::Evening => 4,
+            TimeFrame::Full1 => 5,
+            TimeFrame::Full2 => 6,
+        }
+    }
 }

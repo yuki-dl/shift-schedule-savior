@@ -1,10 +1,9 @@
 #![allow(non_snake_case)]
 
 use dioxus::prelude::*;
-use crate::crates::{
-    employee::{Employee, EmployeeGroup},
+use crate::roster::{
+    employee::{Employee, Roster},
     timeframe::TimeFrame,
-    weekday::get_weekday_arr,
 };
 
 use super::button::{
@@ -13,45 +12,91 @@ use super::button::{
 };
 
 #[inline_props]
-pub fn DateTable(cx: Scope, month: String) -> Element {
+pub fn DateTable(cx: Scope, days: u32, weekday_arr: Vec<String>) -> Element {
     cx.render(rsx!(
         thead {
-            class: "text-base text-gray-700 bg-gray-100 dark:bg-gray-700 dark:text-gray-400 uppercase",
+            class: "text-lg sm:text-base text-gray-700 bg-gray-100 dark:bg-gray-700 dark:text-gray-400 uppercase",
             tr {
                 th {
-                    class: "sticky left-0 top-0 z-10 px-3 bg-gray-100 dark:bg-gray-700 dark:text-gray-400", 
+                    class: "sticky left-0 top-0 z-20 px-4 bg-gray-100 dark:bg-gray-700 dark:text-gray-400", 
                     scope: "col", 
                     "ID"
                 },
                 th {
-                    class: "sticky top-0 px-7 bg-gray-100 dark:bg-gray-700 dark:text-gray-400", 
+                    class: "sticky top-0 left-12 z-10 px-7 bg-gray-100 dark:bg-gray-700 dark:text-gray-400", 
                     scope: "col", 
                     " "
                 },
-                (1..=31).map(|i| rsx!{ th { class: "sticky top-0 bg-gray-100 dark:bg-gray-700 dark:text-gray-400", scope: "col", i.to_string() } } )
+                (1..=*days).map(|i| rsx!{ th { class: "sticky top-0 p-2 bg-gray-100 dark:bg-gray-700 dark:text-gray-400", scope: "col", i.to_string() } } )
             },
-            ArrangeWeekday {month: month.to_string()}
+            tr {
+                th {
+                    class: "sticky top-10 left-0 z-10 bg-gray-100 dark:bg-gray-700 dark:text-gray-400",
+                    scope: "col",
+                    " "
+                },
+                th {
+                    class: "sticky top-10 left-12 z-10 bg-gray-100 dark:bg-gray-700 dark:text-gray-400",
+                    scope: "col", 
+                    " "
+                },
+                weekday_arr.iter().map(|d| { rsx!( th {class: "sticky top-10 p-2 bg-gray-100 dark:bg-gray-700 dark:text-gray-400", scope: "col", d.clone()} ) })
+            }    
         }
     ))
 }
 
 #[inline_props]
-fn ArrangeWeekday(cx: Scope, month: String) -> Element {
-    let weekday_arr = get_weekday_arr(month);
+pub fn CountTable(
+    cx: Scope,
+    counts: Vec<Vec<usize>>
+) -> Element {
+    let morning = counts.iter().map(|c| c[0]).collect::<Vec<_>>();
+    let afternoon = counts.iter().map(|c| c[1]).collect::<Vec<_>>();
+    let evening = counts.iter().map(|c| c[2]).collect::<Vec<_>>();
+
     cx.render(rsx!(
-        tr {
-            th {
-                class: "sticky left-0 bg-gray-100 dark:bg-gray-700 dark:text-gray-400",
-                scope: "col",
-                " "
-            },
-            th {
-                scope: "col", 
-                " "
-            },
-            weekday_arr.iter().map(|d| {
-                rsx!( th {class: "p-2", scope: "col", d.clone()} )
-            })
+        tfoot {
+            class: "font-semibold dark:text-gray-400",
+            tr {
+                th {
+                    class: "sticky left-0 p-2 bg-gray-100 dark:bg-gray-700 dark:text-gray-400", 
+                    scope: "col", 
+                    " "
+                },
+                th {
+                    class: "sticky left-12 p-2 bg-gray-100 dark:bg-gray-700 dark:text-gray-400", 
+                    scope: "col", 
+                    "午前"
+                },
+                morning.iter().map(|m| rsx!(th {class: "bg-indigo-50 border dark:bg-indigo-950 dark:text-gray-400 dark:border-gray-700", "{m}"}))
+            }
+            tr {
+                th {
+                    class: "sticky left-0 p-2 bg-gray-100 dark:bg-gray-700 dark:text-gray-400", 
+                    scope: "col", 
+                    " "
+                },
+                th {
+                    class: "sticky left-12 p-2 bg-gray-100 dark:bg-gray-700 dark:text-gray-400", 
+                    scope: "col", 
+                    "午後"
+                },
+                afternoon.iter().map(|a| rsx!(td {class: "bg-indigo-50 border dark:bg-indigo-950 dark:text-gray-400 dark:border-gray-700", "{a}"}))
+            }
+            tr {
+                th {
+                    class: "sticky left-0 p-2 bg-gray-100 dark:bg-gray-700 dark:text-gray-400", 
+                    scope: "col", 
+                    " "
+                },
+                th {
+                    class: "sticky left-12 p-2 bg-gray-100 dark:bg-gray-700 dark:text-gray-400", 
+                    scope: "col", 
+                    "夜"
+                },
+                evening.iter().map(|e| rsx!(td {class: "bg-indigo-50 border dark:bg-indigo-950 dark:text-gray-400 dark:border-gray-700", "{e}"}))
+            }
         }
     ))
 }
@@ -60,7 +105,8 @@ fn ArrangeWeekday(cx: Scope, month: String) -> Element {
 pub fn EmployeeTable<'a>(
     cx: Scope,
     employee_num: String,
-    month: String,
+    days: u32, 
+    weekday_arr: Vec<String>,
     required_people: Vec<String>,
     is_generated: bool,
     onclick: EventHandler<'a, MouseEvent>,
@@ -70,7 +116,7 @@ pub fn EmployeeTable<'a>(
         return None;
     }
 
-    let employees = create_default_table(employee_num.to_string());
+    let employees = create_default_table(employee_num.to_string(), *days as usize);
     let employees_state = use_state(cx, || employees.clone());
     let emp = employees_state.get();
 
@@ -83,23 +129,22 @@ pub fn EmployeeTable<'a>(
     };
 
     if *is_generated {
-        let eg = EmployeeGroup::new(employee_num, emp.clone(), required_people);
+        let eg = Roster::new(employee_num, emp.clone(), required_people);
         let mut flag = true;
 
-        let results = use_memo(cx, (&eg,), |(mut eg,)| {
-            eg.create();
-            eg.results
+        let (results, counts) = use_memo(cx, (&eg,), |(mut eg,)| {
+            flag = eg.create();
+            (eg.employees, eg.sum)
         });
 
-        let results = if results.is_none() {
-            flag = false;
-            employees_state.get().clone()
-        } else {results.clone().unwrap()};
+        log::info!("{counts:?}");
 
         cx.render(rsx!(
             GeneratedEmployeeTable {
                 employees: results.clone(),
-                month: month.to_string(),
+                counts: counts.clone(),
+                days: *days,
+                weekday_arr: weekday_arr.to_vec(),
                 flag: flag,
                 onreset: move |evt| onreset.call(evt),
                 r: r
@@ -109,7 +154,7 @@ pub fn EmployeeTable<'a>(
         cx.render(rsx!(
             div {
                 h1 {
-                    class: "text-lg text-center font-medium pt-3 pb-3 pr-3 text-gray-900 dark:text-white",
+                    class: "text-xl sm:text-lg text-center font-medium pt-3 pb-3 pr-3 text-gray-900 dark:text-gray-300",
                     "希望休を入力してください。"
                     GenerateButton {
                         is_empty: required_people.iter().any(|r| r.is_empty()),
@@ -117,10 +162,10 @@ pub fn EmployeeTable<'a>(
                     }
                 }
                 div {
-                    class: "flex flex-col h-72 w-96 overflow-auto",
+                    class: "flex flex-col h-72 w-full overflow-auto",
                     table {
                         class: "w-full text-center text-gray-500 border-collapse border dark:text-gray-400 dark:border-gray-700",
-                        DateTable { month: month.to_string() }
+                        DateTable { days: *days, weekday_arr: weekday_arr.to_vec() }
                         tbody {
                             emp
                             .iter()
@@ -129,11 +174,11 @@ pub fn EmployeeTable<'a>(
                                 tr {
                                     class: "bg-white border dark:bg-gray-800 dark:border-gray-700",
                                     th {
-                                        class: "sticky left-0 bg-gray-100 dark:bg-gray-700 dark:text-gray-400",
+                                        class: "sticky left-0 p-2 bg-gray-100 dark:bg-gray-700 dark:text-gray-400",
                                         "{e.id + 1}"
                                     }
                                     th {
-                                        class: "p-2",
+                                        class: "sticky left-12 p-2 bg-gray-100 dark:bg-gray-700 dark:text-gray-400",
                                         onclick: move |_| {
                                             let mut new = emp.clone();
                                             let mut new_t = new[i].timeframe.clone();
@@ -173,7 +218,9 @@ pub fn EmployeeTable<'a>(
 pub fn GeneratedEmployeeTable<'a, F>(
     cx: Scope,
     employees: Vec<Employee>,
-    month: String,
+    counts: Vec<Vec<usize>>,
+    days: u32, 
+    weekday_arr: Vec<String>,
     flag: bool,
     onreset: EventHandler<'a, MouseEvent>,
     r: F
@@ -185,7 +232,7 @@ pub fn GeneratedEmployeeTable<'a, F>(
             if *flag {
                 rsx!(
                     h1 {
-                        class: "text-lg text-center font-medium pt-3 pb-3 pr-3 text-gray-900 dark:text-white",
+                        class: "text-xl sm:text-lg text-center font-medium pt-3 pb-3 pr-3 text-gray-900 dark:text-gray-300",
                         "シフト表が「ほぼ」仕上がりました！"
                         ResetButton {
                             onclick: move |evt| onreset.call(evt)
@@ -195,26 +242,19 @@ pub fn GeneratedEmployeeTable<'a, F>(
             } else {
                 rsx!(
                     h1 {
-                        class: "text-lg text-center font-medium pt-3 pb-3 pr-3 text-gray-900 dark:text-white",
-                        "希望休を入力してください。"
+                        class: "text-xl sm:text-lg text-center font-medium pt-3 pb-3 pr-3 text-red-600 dark:text-red-400",
+                        "設定(Settings)が間違えています。"
                         ResetButton {
                             onclick: move |evt| onreset.call(evt)
                         }
                     }        
-                    div {
-                        class: "text-center",
-                        span {
-                            class: "text-sm font-medium pt-3 pb-3 text-red-600 dark:text-red-400",
-                            "設定(Settings)が間違っています。もう一度入力してください。"
-                        }
-                    }
                 )
             }
             div {
-                class: "flex flex-col h-72 w-96 overflow-auto",
+                class: "flex flex-col h-72 w-full overflow-auto",
                 table {
                     class: "w-full text-center text-gray-500 border-collapse border dark:text-gray-400 dark:border-gray-700",
-                    DateTable { month: month.to_string() }
+                    DateTable { days: *days, weekday_arr: weekday_arr.to_vec() }
                     tbody {
                         employees
                         .iter()
@@ -222,10 +262,13 @@ pub fn GeneratedEmployeeTable<'a, F>(
                             tr {
                                 class: "bg-white border dark:bg-gray-800 dark:border-gray-700",
                                 th {
-                                    class: "sticky left-0 bg-gray-100 dark:bg-gray-700 dark:text-gray-400",
+                                    class: "sticky left-0 p-2 bg-gray-100 dark:bg-gray-700 dark:text-gray-400",
                                     "{e.id + 1}"
                                 },
-                                th { class: "p-2", "{e.timeframe.get()}" },
+                                th {
+                                    class: "sticky left-12 p-2 bg-gray-100 dark:bg-gray-700 dark:text-gray-400",
+                                    "{e.timeframe.get()}"
+                                },
                                 e.day_off
                                     .iter()
                                     .map(|d| rsx!(
@@ -236,17 +279,18 @@ pub fn GeneratedEmployeeTable<'a, F>(
                                     ))
                             }
                         ))
-                    }    
+                    }
+                    CountTable {counts: counts.to_vec()} 
                 }
             }
         }
     ))
 }
 
-fn create_default_table(employee_num: String) -> Vec<Employee> {
+fn create_default_table(employee_num: String, days: usize) -> Vec<Employee> {
     // 人数を入力すると、作成
     let employee_num = employee_num.parse::<usize>().unwrap();
     (0..employee_num).map(|i| {
-        Employee::new(i, TimeFrame::Full1, vec![1u8; 31])
+        Employee::new(i, TimeFrame::Full1, vec![1u8; days])
     }).collect::<Vec<_>>()
 }
