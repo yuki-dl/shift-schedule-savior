@@ -25,9 +25,9 @@ pub fn app(cx: Scope) -> Element {
                 class: "group h-96 w-full sm:w-96 [perspective:1000px]",
                 div {
                     class: if *is_rotate.get() {
-                        "relative h-full w-full rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 transition-all duration-500 [transform-style:preserve-3d] [transform:translate-z] [transform:rotateY(180deg)]"
+                        "relative h-full w-full rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 transition-all duration-500 [transform-style:preserve-3d] [transform:rotateY(180deg)]"
                     } else {
-                        "relative h-full w-full rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 transition-all duration-500 [transform-style:preserve-3d] [transform:translate-z]"
+                        "relative h-full w-full rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 transition-all duration-500 [transform-style:preserve-3d]"
                     },
                     Front {
                         employee_num: employee_num.get(),
