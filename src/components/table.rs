@@ -1,10 +1,7 @@
 #![allow(non_snake_case)]
 
 use dioxus::prelude::*;
-use crate::roster::{
-    employee::{Employee, Roster},
-    timeframe::TimeFrame,
-};
+use crate::roster::employee::{Employee, Roster, create_default_table};
 
 use super::button::{
     GenerateButton,
@@ -12,7 +9,7 @@ use super::button::{
 };
 
 #[inline_props]
-pub fn DateTable(cx: Scope, days: u32, weekday_arr: Vec<String>) -> Element {
+pub fn DateTable<'a>(cx: Scope, days: u32, weekday_arr: &'a Vec<String>) -> Element {
     cx.render(rsx!(
         thead {
             class: "text-lg sm:text-base text-gray-700 bg-gray-100 dark:bg-gray-700 dark:text-gray-400 uppercase",
@@ -47,9 +44,9 @@ pub fn DateTable(cx: Scope, days: u32, weekday_arr: Vec<String>) -> Element {
 }
 
 #[inline_props]
-pub fn CountTable(
+pub fn CountTable<'a>(
     cx: Scope,
-    counts: Vec<Vec<usize>>
+    counts: &'a Vec<Vec<usize>>
 ) -> Element {
     let morning = counts.iter().map(|c| c[0]).collect::<Vec<_>>();
     let afternoon = counts.iter().map(|c| c[1]).collect::<Vec<_>>();
@@ -104,9 +101,9 @@ pub fn CountTable(
 #[inline_props]
 pub fn EmployeeTable<'a>(
     cx: Scope,
-    employee_num: String,
+    employee_num: &'a String,
     days: u32, 
-    weekday_arr: Vec<String>,
+    weekday_arr: &'a Vec<String>,
     required_people: Vec<String>,
     is_generated: bool,
     onclick: EventHandler<'a, MouseEvent>,
@@ -114,9 +111,11 @@ pub fn EmployeeTable<'a>(
 ) -> Element {
     if employee_num.is_empty() {
         return None;
-    }
+    } else if employee_num.parse::<usize>().unwrap() < 2 {
+        return None;
+    };
 
-    let employees = create_default_table(employee_num.to_string(), *days as usize);
+    let employees = create_default_table(employee_num, *days as usize);
     let employees_state = use_state(cx, || employees.clone());
     let emp = employees_state.get();
 
@@ -129,7 +128,7 @@ pub fn EmployeeTable<'a>(
     };
 
     if *is_generated {
-        let eg = Roster::new(employee_num, emp.clone(), required_people);
+        let eg = Roster::new(employee_num, emp.to_vec(), required_people);
         let mut flag = true;
 
         let (results, counts) = use_memo(cx, (&eg,), |(mut eg,)| {
@@ -137,14 +136,12 @@ pub fn EmployeeTable<'a>(
             (eg.employees, eg.sum)
         });
 
-        log::info!("{counts:?}");
-
         cx.render(rsx!(
             GeneratedEmployeeTable {
-                employees: results.clone(),
-                counts: counts.clone(),
+                employees: results,
+                counts: counts,
                 days: *days,
-                weekday_arr: weekday_arr.to_vec(),
+                weekday_arr: weekday_arr,
                 flag: flag,
                 onreset: move |evt| onreset.call(evt),
                 r: r
@@ -165,7 +162,7 @@ pub fn EmployeeTable<'a>(
                     class: "flex flex-col h-72 w-full overflow-auto",
                     table {
                         class: "w-full text-center text-gray-500 border-collapse border dark:text-gray-400 dark:border-gray-700",
-                        DateTable { days: *days, weekday_arr: weekday_arr.to_vec() }
+                        DateTable { days: *days, weekday_arr: weekday_arr }
                         tbody {
                             emp
                             .iter()
@@ -217,10 +214,10 @@ pub fn EmployeeTable<'a>(
 #[inline_props]
 pub fn GeneratedEmployeeTable<'a, F>(
     cx: Scope,
-    employees: Vec<Employee>,
-    counts: Vec<Vec<usize>>,
+    employees: &'a Vec<Employee>,
+    counts: &'a Vec<Vec<usize>>,
     days: u32, 
-    weekday_arr: Vec<String>,
+    weekday_arr: &'a Vec<String>,
     flag: bool,
     onreset: EventHandler<'a, MouseEvent>,
     r: F
@@ -254,7 +251,7 @@ pub fn GeneratedEmployeeTable<'a, F>(
                 class: "flex flex-col h-72 w-full overflow-auto",
                 table {
                     class: "w-full text-center text-gray-500 border-collapse border dark:text-gray-400 dark:border-gray-700",
-                    DateTable { days: *days, weekday_arr: weekday_arr.to_vec() }
+                    DateTable { days: *days, weekday_arr: weekday_arr }
                     tbody {
                         employees
                         .iter()
@@ -280,17 +277,9 @@ pub fn GeneratedEmployeeTable<'a, F>(
                             }
                         ))
                     }
-                    CountTable {counts: counts.to_vec()} 
+                    CountTable { counts: counts } 
                 }
             }
         }
     ))
-}
-
-fn create_default_table(employee_num: String, days: usize) -> Vec<Employee> {
-    // 人数を入力すると、作成
-    let employee_num = employee_num.parse::<usize>().unwrap();
-    (0..employee_num).map(|i| {
-        Employee::new(i, TimeFrame::Full1, vec![1u8; days])
-    }).collect::<Vec<_>>()
 }

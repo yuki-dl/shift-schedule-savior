@@ -30,15 +30,15 @@ pub fn app(cx: Scope) -> Element {
                         "relative h-full w-full rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 transition-all duration-500 [transform-style:preserve-3d] [transform:translate-z]"
                     },
                     Front {
-                        employee_num: employee_num.get().clone(),
-                        year: year.to_string(),
-                        month: month.get().clone(),
+                        employee_num: employee_num.get(),
+                        year: year,
+                        month: month.get(),
                         onchange_employee_num: move |evt: FormEvent| employee_num.set(evt.value.clone()),
                         onchange_month: move |evt: FormEvent| month.set(evt.value.clone()),
                         onrotate: move |_| is_rotate.set(true),
                     }
                     Back {
-                        employee_num: employee_num.get().clone(),
+                        employee_num: employee_num.get(),
                         days: days,
                         weekday_arr: weekday_arr,
                     }

@@ -8,15 +8,15 @@ pub fn Tab<'a>(
     class: &'a str,
     class_blue: &'a str,
     tab_index: i32, 
-    open_index: i32,
-    text: String,
+    open_index: &'a i32,
+    text: &'a str,
     onclick: EventHandler<'a, MouseEvent>
 ) -> Element {
     cx.render(rsx!(
         li {
             class: "w-full",
             button {
-                class: if open_index == tab_index {
+                class: if *open_index == tab_index {
                     *class_blue
                 } else {
                     *class

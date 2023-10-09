@@ -14,14 +14,14 @@ use super::table::EmployeeTable;
 #[inline_props]
 pub fn Front<'a>(
     cx: Scope,
-    employee_num: String,
+    employee_num: &'a String,
     year: String,
-    month: String,
+    month: &'a String,
     onchange_employee_num: EventHandler<'a, FormEvent>,
     onchange_month: EventHandler<'a, FormEvent>,
     onrotate: EventHandler<'a, MouseEvent>,
 ) -> Element {
-    let is_validate = |s: String, range: std::ops::Range<u8>| {
+    let is_validate = |s: &String, range: std::ops::Range<u8>| {
         let Ok(numbers) = s.parse::<u8>() else { return false };
         if range.contains(&numbers) {
             return true;
@@ -29,7 +29,7 @@ pub fn Front<'a>(
         false
     };
 
-    let flag = is_validate(employee_num.to_string(), 2..255) && is_validate(month.to_string(), 1..12);
+    let flag = is_validate(employee_num, 2..255) && is_validate(month, 1..12);
     cx.render(rsx!(
         div {
             class: "absolute inset-0 h-full w-full rounded-xl object-cover shadow-xl shadow-black/40",
@@ -41,8 +41,8 @@ pub fn Front<'a>(
                 }
                 div {
                     class: "flex flex-col items-center justify-center",
-                    InputEmployeeNum { employee_num: employee_num.to_string(), onchange: move |evt| onchange_employee_num.call(evt) }
-                    InputMonth { month: month.to_string(), onchange: move |evt| onchange_month.call(evt) }
+                    InputEmployeeNum { employee_num: employee_num, onchange: move |evt| onchange_employee_num.call(evt) }
+                    InputMonth { month: month, onchange: move |evt| onchange_month.call(evt) }
                     NextButton {
                         onrotate: move |evt| onrotate.call(evt),
                         flag: flag                    
@@ -54,9 +54,9 @@ pub fn Front<'a>(
 }
 
 #[inline_props]
-pub fn Back(
+pub fn Back<'a>(
     cx: Scope,
-    employee_num: String,
+    employee_num: &'a String,
     days: u32, 
     weekday_arr: Vec<String>
 ) -> Element {
@@ -69,23 +69,23 @@ pub fn Back(
     
     cx.render(rsx!(
         div {
-            class: "absolute inset-0 h-full w-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 [transform:rotateY(180deg)] [backface-visibility:hidden]",
+            class: "absolute inset-0 h-full w-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 [transform:rotateY(180deg)] backface-hidden",
             ul {
                 class: "text-sm font-medium text-center text-gray-500 grid grid-cols-2 divide-x divide-gray-200 rounded-lg sm:flex dark:divide-gray-600 dark:text-gray-400",
                 Tab {
                     class: "inline-block w-full p-4 rounded-tl-lg bg-gray-50 hover:bg-gray-100 focus:outline-none dark:bg-gray-700 dark:hover:bg-gray-600",
                     class_blue: "inline-block w-full p-4 rounded-tl-lg bg-gray-50 hover:bg-gray-100 focus:outline-none dark:bg-gray-700 dark:hover:bg-gray-600 text-blue-600 dark:text-blue-500",
                     tab_index: 1,
-                    open_index: open_tab.get().clone(),
-                    text: "Settings".to_string(),
+                    open_index: open_tab.get(),
+                    text: "Settings",
                     onclick: move |_| open_tab.set(1)                
                 }
                 Tab {
                     class: "inline-block w-full p-4 rounded-tr-lg bg-gray-50 hover:bg-gray-100 focus:outline-none dark:bg-gray-700 dark:hover:bg-gray-600",
                     class_blue: "inline-block w-full p-4 rounded-tr-lg bg-gray-50 hover:bg-gray-100 focus:outline-none dark:bg-gray-700 dark:hover:bg-gray-600 text-blue-600 dark:text-blue-500",
                     tab_index: 2,
-                    open_index: open_tab.get().clone(),
-                    text: "Table".to_string(),
+                    open_index: open_tab.get(),
+                    text: "Table",
                     onclick: move |_| open_tab.set(2)
                 }
             }
@@ -106,11 +106,11 @@ pub fn Back(
             div {
                 class: if open_tab.get().clone() == 2 {"block"} else {"hidden"},
                 EmployeeTable {
-                    employee_num: employee_num.to_string(),
+                    employee_num: employee_num,
                     days: *days,
-                    weekday_arr: weekday_arr.to_vec(),
+                    weekday_arr: weekday_arr,
                     required_people: input_vec_refcell.to_vec(),
-                    is_generated: is_generated.get().clone(),
+                    is_generated: *is_generated.get(),
                     onclick: move |_| {
                         is_generated.set(true);
                     },

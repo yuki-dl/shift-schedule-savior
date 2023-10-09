@@ -192,11 +192,11 @@ impl FitnessEval {
         }
     }
     fn eval_dayoff(&mut self, g: &Vec<u8>) {
-        let l = self.day_off.len();
         let day_off = self.day_off.iter().flat_map(|x| x[1..].to_vec()).collect::<Vec<_>>();
+        let l = day_off.len();
 
         let mut eval_arr = vec![0u8; l];
-
+        
         // !(!arr || DAYOFF)を行い、trueになった数だけpenaltyに加算
         for (i, (a, f)) in g.iter().zip(day_off.iter()).enumerate() {
             if !(!a | f) == 1 { eval_arr[i] = 1 }

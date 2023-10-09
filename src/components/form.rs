@@ -3,7 +3,7 @@
 use dioxus::prelude::*;
 
 #[inline_props]
-pub fn InputMonth<'a>(cx: Scope, month: String, onchange: EventHandler<'a, FormEvent>) -> Element<'a> {
+pub fn InputMonth<'a>(cx: Scope, month: &'a String, onchange: EventHandler<'a, FormEvent>) -> Element<'a> {
     cx.render(rsx!(
         div {
             class: "relative z-0",
@@ -30,7 +30,7 @@ pub fn InputMonth<'a>(cx: Scope, month: String, onchange: EventHandler<'a, FormE
 #[inline_props]
 pub fn InputEmployeeNum<'a>(
     cx: Scope,
-    employee_num: String,
+    employee_num: &'a String,
     onchange: EventHandler<'a, FormEvent>
 ) -> Element<'a> {
     cx.render(rsx!(

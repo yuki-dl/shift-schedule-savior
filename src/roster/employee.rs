@@ -124,3 +124,11 @@ pub fn groupby<'a>(employees: &'a [Employee]) -> Vec<usize> {
     }
     results
 }
+
+pub fn create_default_table(employee_num: &String, days: usize) -> Vec<Employee> {
+    // 人数を入力すると、作成
+    let employee_num = employee_num.parse::<usize>().unwrap();
+    (0..employee_num).map(|i| {
+        Employee::new(i, TimeFrame::Full1, vec![1u8; days])
+    }).collect::<Vec<_>>()
+}
