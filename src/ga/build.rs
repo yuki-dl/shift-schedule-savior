@@ -216,7 +216,7 @@ impl FitnessEval {
         */
         let p = chunks.iter().map(|a| {
             (0..days-2).any(|i| a[i] + a[i+2] == 0)
-        }).map(|b| if b {0} else {1} ).collect::<Vec<usize>>();
+        }).map(|b| if b {1} else {0} ).collect::<Vec<usize>>();
 
         self.penalty += p.iter().sum::<usize>();
     }
