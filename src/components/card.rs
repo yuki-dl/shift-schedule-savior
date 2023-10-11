@@ -36,14 +36,11 @@ pub fn Front<'a, F>(
                     class: "text-2xl mb-10 text-center font-medium text-gray-900 dark:text-gray-300",
                     "{year}年{month}月度 人員計画表"
                 }
-                div {
-                    class: "flex flex-col items-center justify-center",
-                    InputEmployeeNum { employee_num: employee_num, onchange: move |evt| onchange_employee_num.call(evt) }
-                    InputMonth { month: month, onchange: move |evt| onchange_month.call(evt) }
-                    NextButton {
-                        onrotate: move |evt| onrotate.call(evt),
-                        flag: flag                    
-                    }
+                InputEmployeeNum { employee_num: employee_num, onchange: move |evt| onchange_employee_num.call(evt) }
+                InputMonth { month: month, onchange: move |evt| onchange_month.call(evt) }
+                NextButton {
+                    onrotate: move |evt| onrotate.call(evt),
+                    flag: flag                    
                 }
             }
         }
@@ -70,7 +67,7 @@ pub fn Back<'a, F>(
     let flag = !f(employee_num, EMPLOYEENUM_MIN..EMPLOYEENUM_MAX);
     cx.render(rsx!(
         div {
-            class: "absolute inset-0 h-full w-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 [transform:rotateY(180deg)] !backface-hidden",
+            class: "absolute inset-0 h-full w-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 [transform:rotateY(180deg)] [-webkit-transform:translate3d(0,0,0)] !backface-hidden",
             ul {
                 class: "text-sm font-medium text-center text-gray-500 grid grid-cols-2 divide-x divide-gray-200 rounded-lg sm:flex dark:divide-gray-600 dark:text-gray-400",
                 Tab {
