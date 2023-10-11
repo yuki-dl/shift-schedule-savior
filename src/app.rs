@@ -33,9 +33,9 @@ pub fn app(cx: Scope) -> Element {
                 class: "group h-96 w-full sm:w-96 [perspective:1000px]",
                 div {
                     class: if *is_rotate.get() {
-                        "relative h-full w-full rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 transition-all duration-500 [transform-style:preserve-3d] [-webkit-transform-style:preserve-3d] [transform:rotateY(180deg)]"
+                        "relative h-full w-full rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 transition-all duration-500 [transform-style:preserve-3d] [transform:rotateY(180deg)]"
                     } else {
-                        "relative h-full w-full rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 transition-all duration-500 [transform-style:preserve-3d] [-webkit-transform-style:preserve-3d]"
+                        "relative h-full w-full rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 transition-all duration-500 [transform-style:preserve-3d] [translateZ(1px)] !backface-hidden"
                     },
                     Front {
                         employee_num: employee_num.get(),

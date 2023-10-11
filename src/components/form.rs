@@ -96,6 +96,7 @@ pub fn InputEmployeeTimeframe<'a>(
                     placeholder: " ",
                     value: "{morning}",
                     min: 0,
+                    pattern: "[0-9]*",
                     onchange: move |evt| onchange_morning.call(evt)
                 }
                 label {
@@ -114,6 +115,7 @@ pub fn InputEmployeeTimeframe<'a>(
                     placeholder: " ",
                     value: "{afternoon}",
                     min: 0,
+                    pattern: "[0-9]*",
                     onchange: move |evt| onchange_afternoon.call(evt)
                 }
                 label {
@@ -132,6 +134,7 @@ pub fn InputEmployeeTimeframe<'a>(
                     placeholder: " ",
                     value: "{evening}",
                     min: 0,
+                    pattern: "[0-9]*",
                     onchange: move |evt| onchange_evening.call(evt)
                 }
                 label {
