@@ -5,6 +5,7 @@ use crate::roster::employee::{Employee, Roster, create_default_table};
 
 use super::button::{
     GenerateButton,
+    RegenerateButton,
     ResetButton
 };
 
@@ -108,18 +109,21 @@ pub fn EmployeeTable<'a>(
     is_generated: bool,
     onclick: EventHandler<'a, MouseEvent>,
     onreset: EventHandler<'a, MouseEvent>,
+    flag: bool
 ) -> Element {
     if employee_num.is_empty() {
         return None;
-    } else if employee_num.parse::<usize>().unwrap() < 2 {
+    } else if *flag {
         return None;
-    };
+    }
 
     let employees = create_default_table(employee_num, *days as usize);
     let employees_state = use_state(cx, || employees.clone());
     let emp = employees_state.get();
 
-    let r = |n: u8| {
+    let signal_state = use_state(&cx, || 0);
+
+    let replace = |n: u8| {
         match n {
             0 => "○".to_string(),
             1 => " ".to_string(),
@@ -128,7 +132,7 @@ pub fn EmployeeTable<'a>(
     };
 
     if *is_generated {
-        let eg = Roster::new(employee_num, emp.to_vec(), required_people);
+        let eg = Roster::new(employee_num, emp.to_vec(), required_people, *signal_state.get());
         let mut flag = true;
 
         let (results, counts) = use_memo(cx, (&eg,), |(mut eg,)| {
@@ -143,15 +147,16 @@ pub fn EmployeeTable<'a>(
                 days: *days,
                 weekday_arr: weekday_arr,
                 flag: flag,
+                onregen: move |_| signal_state.set(1 - signal_state.get()),
                 onreset: move |evt| onreset.call(evt),
-                r: r
+                r: replace
             }
         ))
     } else {
         cx.render(rsx!(
             div {
                 h1 {
-                    class: "text-xl sm:text-lg text-center font-medium pt-3 pb-3 pr-3 text-gray-900 dark:text-gray-300",
+                    class: "text-lg text-center font-medium pt-3 pb-3 pr-3 text-gray-900 dark:text-gray-300",
                     "希望休を入力してください。"
                     GenerateButton {
                         is_empty: required_people.iter().any(|r| r.is_empty()),
@@ -198,7 +203,7 @@ pub fn EmployeeTable<'a>(
                                                     new[i].day_off = new_day_off;
                                                     employees_state.set(new);
                                                 },
-                                                "{r(*d)}"    
+                                                "{replace(*d)}"    
                                             }
                                         ))
                                 }
@@ -219,6 +224,7 @@ pub fn GeneratedEmployeeTable<'a, F>(
     days: u32, 
     weekday_arr: &'a Vec<String>,
     flag: bool,
+    onregen: EventHandler<'a, MouseEvent>,
     onreset: EventHandler<'a, MouseEvent>,
     r: F
 ) -> Element 
@@ -229,17 +235,23 @@ pub fn GeneratedEmployeeTable<'a, F>(
             if *flag {
                 rsx!(
                     h1 {
-                        class: "text-xl sm:text-lg text-center font-medium pt-3 pb-3 pr-3 text-gray-900 dark:text-gray-300",
+                        class: "text-lg text-center font-medium pt-3 pb-3 pr-3 text-gray-900 dark:text-gray-300",
                         "シフト表が「ほぼ」仕上がりました！"
-                        ResetButton {
-                            onclick: move |evt| onreset.call(evt)
+                        div {
+                            class: "grid grid-cols-2 pt-2 items-center justify-center",
+                            RegenerateButton {
+                                onclick: move |evt| onregen.call(evt)
+                            }
+                            ResetButton {
+                                onclick: move |evt| onreset.call(evt)
+                            }
                         }
                     }
                 )
             } else {
                 rsx!(
                     h1 {
-                        class: "text-xl sm:text-lg text-center font-medium pt-3 pb-3 pr-3 text-red-600 dark:text-red-400",
+                        class: "text-base sm:text-lg text-center font-medium pt-3 pb-3 pr-3 text-red-600 dark:text-red-400",
                         "設定(Settings)が間違えています。"
                         ResetButton {
                             onclick: move |evt| onreset.call(evt)

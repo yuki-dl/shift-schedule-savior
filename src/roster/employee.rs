@@ -27,13 +27,15 @@ pub struct Roster {
     employee_num: usize,
     pub employees: Vec<Employee>,
     required_people: Vec<usize>,
-    pub sum: Vec<Vec<usize>>
+    pub sum: Vec<Vec<usize>>,
+    signal: u8,
 }
 impl Roster {
     pub fn new(
         employee_num: &String,
         employees: Vec<Employee>,
-        required_people: &Vec<String>
+        required_people: &Vec<String>,
+        signal: u8
     ) -> Self {
         let employee_num = employee_num.parse::<usize>().unwrap();
         let required_people = required_people
@@ -41,7 +43,7 @@ impl Roster {
             .map(|n| n.parse::<usize>().unwrap())
             .collect::<Vec<_>>();
 
-        Self { employee_num, employees, required_people, sum: vec![] }
+        Self { employee_num, employees, required_people, sum: vec![], signal }
     }
     pub fn create(&mut self) -> bool {
         if !self.tests(groupby(&*self.employees)) {

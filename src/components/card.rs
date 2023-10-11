@@ -4,6 +4,8 @@ use dioxus::prelude::*;
 
 use super::button::NextButton;
 use super::form::{
+    EMPLOYEENUM_MIN,
+    EMPLOYEENUM_MAX,
     InputEmployeeNum,
     InputMonth,
     InputEmployeeTimeframe
@@ -12,7 +14,7 @@ use super::tab::Tab;
 use super::table::EmployeeTable;
 
 #[inline_props]
-pub fn Front<'a>(
+pub fn Front<'a, F>(
     cx: Scope,
     employee_num: &'a String,
     year: String,
@@ -20,16 +22,11 @@ pub fn Front<'a>(
     onchange_employee_num: EventHandler<'a, FormEvent>,
     onchange_month: EventHandler<'a, FormEvent>,
     onrotate: EventHandler<'a, MouseEvent>,
-) -> Element {
-    let is_validate = |s: &String, range: std::ops::Range<u8>| {
-        let Ok(numbers) = s.parse::<u8>() else { return false };
-        if range.contains(&numbers) {
-            return true;
-        }
-        false
-    };
-
-    let flag = is_validate(employee_num, 2..255) && is_validate(month, 1..12);
+    f: F
+) -> Element where
+    F: Fn(&String, std::ops::Range<u8>) -> bool
+{
+    let flag = f(employee_num, EMPLOYEENUM_MIN..EMPLOYEENUM_MAX) && f(month, 1..12);
     cx.render(rsx!(
         div {
             class: "absolute inset-0 h-full w-full rounded-xl object-cover shadow-xl shadow-black/40",
@@ -54,19 +51,23 @@ pub fn Front<'a>(
 }
 
 #[inline_props]
-pub fn Back<'a>(
+pub fn Back<'a, F>(
     cx: Scope,
     employee_num: &'a String,
     days: u32, 
-    weekday_arr: Vec<String>
-) -> Element {
+    weekday_arr: Vec<String>,
+    f: F
+) -> Element where
+    F: Fn(&String, std::ops::Range<u8>) -> bool
+{
     let is_generated = use_state(&cx, || false);
     let open_tab = use_state(&cx, || 1);
 
     // [morning, afternoon, evening]
     let input_vec = use_ref(&cx, || vec!["".to_string(); 3]);
     let input_vec_refcell = input_vec.read();
-    
+
+    let flag = !f(employee_num, EMPLOYEENUM_MIN..EMPLOYEENUM_MAX);
     cx.render(rsx!(
         div {
             class: "absolute inset-0 h-full w-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 [transform:rotateY(180deg)] !backface-hidden",
@@ -118,6 +119,7 @@ pub fn Back<'a>(
                         is_generated.set(false);
                         input_vec.with_mut(|i| *i = vec!["".to_string(); 3]);
                     },
+                    flag: flag
                 }
             }
         }

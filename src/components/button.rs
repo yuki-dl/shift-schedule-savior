@@ -44,13 +44,27 @@ pub fn GenerateButton<'a>(
     } else {
         cx.render(rsx!(
             button {
-                class: "text-base font-semibold text-white py-2 px-4 ml-4 rounded bg-indigo-700 btn hover:bg-indigo-400",
+                class: "text-base font-semibold text-white py-2 px-4 ml-4 rounded bg-indigo-700 btn hover:bg-indigo-400 focus:bg-rose-500",
                 onclick: move |evt| onclick.call(evt),
                 "Generate"
             }
         ))
     }
 
+}
+
+#[inline_props]
+pub fn RegenerateButton<'a>(
+    cx: Scope,
+    onclick: EventHandler<'a, MouseEvent>
+) -> Element {
+    cx.render(rsx!(
+        button {
+            class: "text-base font-semibold text-white py-2 px-4 ml-4 rounded bg-indigo-700 btn hover:bg-indigo-400 focus:bg-rose-500",
+            onclick: move |evt| onclick.call(evt),
+            "Regenerate"
+        }
+    ))
 }
 
 #[inline_props]

@@ -57,7 +57,7 @@ pub fn run() {
     
     let start = std::time::Instant::now();
 
-    let mut eg = Roster::new(&employee_num, employees, &required_people);
+    let mut eg = Roster::new(&employee_num, employees, &required_people, 0);
     eg.create();
     eg.employees.iter().for_each(|e| println!("{e:?}"));
     println!("{:?}", eg.sum);

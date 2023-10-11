@@ -17,6 +17,14 @@ pub fn app(cx: Scope) -> Element {
     let month = use_state(&cx, || _month);
     let (days, weekday_arr) = get_date(&year, &month.get());
 
+    let is_validate = |s: &String, range: std::ops::Range<u8>| {
+        let Ok(numbers) = s.parse::<u8>() else { return false };
+        if range.contains(&numbers) {
+            return true;
+        }
+        false
+    };
+
     cx.render(rsx!(
         // Header {}
         main {
@@ -36,11 +44,13 @@ pub fn app(cx: Scope) -> Element {
                         onchange_employee_num: move |evt: FormEvent| employee_num.set(evt.value.clone()),
                         onchange_month: move |evt: FormEvent| month.set(evt.value.clone()),
                         onrotate: move |_| is_rotate.set(true),
+                        f: is_validate
                     }
                     Back {
                         employee_num: employee_num.get(),
                         days: days,
                         weekday_arr: weekday_arr,
+                        f: is_validate
                     }
                 }
             }

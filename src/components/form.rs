@@ -2,6 +2,10 @@
 
 use dioxus::prelude::*;
 
+// limit
+pub const EMPLOYEENUM_MIN: u8 = 2;
+pub const EMPLOYEENUM_MAX: u8 = 30;
+
 #[inline_props]
 pub fn InputMonth<'a>(cx: Scope, month: &'a String, onchange: EventHandler<'a, FormEvent>) -> Element<'a> {
     cx.render(rsx!(
@@ -42,8 +46,8 @@ pub fn InputEmployeeNum<'a>(
                 class: "block py-2.5 mb-5 w-full text-base text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none out-of-range:border-red-500 dark:text-gray-300 dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer",
                 placeholder: " ",
                 value: "{employee_num}",
-                min: 2,
-                max: 255,
+                min: EMPLOYEENUM_MIN as i64,
+                max: EMPLOYEENUM_MAX as i64,
                 required: true,
                 onchange: move |evt| onchange.call(evt)
             }
@@ -77,7 +81,7 @@ pub fn InputEmployeeTimeframe<'a>(
         form {
             class: "flex flex-col space-y-6",
             h1 {
-                class: "text-xl sm:text-lg text-center font-medium pt-4 text-gray-900 dark:text-gray-300",
+                class: "text-lg text-center font-medium pt-4 text-gray-900 dark:text-gray-300",
                 "時間帯ごとに必要な人数を入力してください。"
             }
 
