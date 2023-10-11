@@ -158,9 +158,12 @@ pub fn EmployeeTable<'a>(
                 h1 {
                     class: "text-lg text-center font-medium pt-3 pb-3 pr-3 text-gray-900 dark:text-gray-300",
                     "希望休を入力してください。"
-                    GenerateButton {
-                        is_empty: required_people.iter().any(|r| r.is_empty()),
-                        onclick: move |evt| onclick.call(evt),
+                    div {
+                        class: "pt-2",
+                        GenerateButton {
+                            is_empty: required_people.iter().any(|r| r.is_empty()),
+                            onclick: move |evt| onclick.call(evt),
+                        }
                     }
                 }
                 div {

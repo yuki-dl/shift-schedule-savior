@@ -36,8 +36,8 @@ pub fn Front<'a, F>(
                     class: "text-2xl mb-10 text-center font-medium text-gray-900 dark:text-gray-300",
                     "{year}年{month}月度 人員計画表"
                 }
-                InputEmployeeNum { employee_num: employee_num, onchange: move |evt| onchange_employee_num.call(evt) }
                 InputMonth { month: month, onchange: move |evt| onchange_month.call(evt) }
+                InputEmployeeNum { employee_num: employee_num, onchange: move |evt| onchange_employee_num.call(evt) }
                 NextButton {
                     onrotate: move |evt| onrotate.call(evt),
                     flag: flag                    

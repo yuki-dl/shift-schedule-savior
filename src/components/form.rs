@@ -14,11 +14,12 @@ pub fn InputMonth<'a>(cx: Scope, month: &'a String, onchange: EventHandler<'a, F
             input {
                 r#type: "number",
                 id: "input_month",
-                class: "block py-2.5 w-full text-base text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none out-of-range:border-red-500 dark:text-gray-300 dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer",
+                class: "block py-2.5 mb-5 w-20 text-base text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none out-of-range:border-red-500 dark:text-gray-300 dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer",
                 placeholder: " ",
                 value: "{month}",
                 min: 1,
                 max: 12,
+                pattern: "[0-9]*",
                 required: true,
                 onchange: move |evt| onchange.call(evt)
             }
@@ -43,12 +44,13 @@ pub fn InputEmployeeNum<'a>(
             input {
                 r#type: "number",
                 id: "input_num",
-                class: "block py-2.5 mb-5 w-full text-base text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none out-of-range:border-red-500 dark:text-gray-300 dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer",
+                class: "block py-2.5 mb-3 w-20 text-base text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none out-of-range:border-red-500 dark:text-gray-300 dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer",
                 placeholder: " ",
                 value: "{employee_num}",
                 min: EMPLOYEENUM_MIN as i64,
                 max: EMPLOYEENUM_MAX as i64,
                 required: true,
+                pattern: "[0-9]*",
                 onchange: move |evt| onchange.call(evt)
             }
             label {
@@ -79,9 +81,9 @@ pub fn InputEmployeeTimeframe<'a>(
     );
     cx.render(rsx!(
         form {
-            class: "flex flex-col space-y-6",
+            class: "flex flex-col space-y-6 items-center justify-center",
             h1 {
-                class: "text-lg text-center font-medium pt-4 text-gray-900 dark:text-gray-300",
+                class: "text-base sm:text-lg text-center font-medium pt-4 pb-2 text-gray-900 dark:text-gray-300",
                 "時間帯ごとに必要な人数を入力してください。"
             }
 
