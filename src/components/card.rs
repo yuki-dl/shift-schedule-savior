@@ -29,7 +29,7 @@ pub fn Front<'a, F>(
     let flag = f(employee_num, EMPLOYEENUM_MIN..EMPLOYEENUM_MAX) && f(month, 1..12);
     cx.render(rsx!(
         div {
-            class: "absolute inset-0 h-full w-full rounded-xl object-cover shadow-xl shadow-black/40",
+            class: "absolute inset-0 h-full w-full rounded-xl object-cover shadow-xl shadow-black/40 !backface-hidden",
             div {
                 class: "flex min-h-full flex-col items-center justify-center",
                 h1 {
@@ -67,9 +67,9 @@ pub fn Back<'a, F>(
     let flag = !f(employee_num, EMPLOYEENUM_MIN..EMPLOYEENUM_MAX);
     cx.render(rsx!(
         div {
-            class: "absolute inset-0 h-full w-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 [transform:rotateY(180deg)] !backface-hidden",
+            class: "absolute inset-0 h-full w-full bg-white border border-gray-200 rounded-xl shadow-xl shadow-black/40 dark:bg-gray-800 dark:border-gray-700 [transform:rotateY(180deg)] !backface-hidden",
             ul {
-                class: "text-sm font-medium text-center text-gray-500 grid grid-cols-2 divide-x divide-gray-200 rounded-lg sm:flex dark:divide-gray-600 dark:text-gray-400",
+                class: "text-sm font-medium text-center text-gray-500 grid grid-cols-2 divide-x divide-gray-200 rounded-lg dark:divide-gray-600 dark:text-gray-400",
                 Tab {
                     class: "inline-block w-full p-4 rounded-tl-lg bg-gray-50 hover:bg-gray-100 focus:outline-none dark:bg-gray-700 dark:hover:bg-gray-600",
                     class_blue: "inline-block w-full p-4 rounded-tl-lg bg-gray-50 hover:bg-gray-100 focus:outline-none dark:bg-gray-700 dark:hover:bg-gray-600 text-blue-600 dark:text-blue-500",

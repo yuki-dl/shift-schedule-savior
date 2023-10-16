@@ -25,7 +25,7 @@ pub fn DateTable<'a>(cx: Scope, days: u32, weekday_arr: &'a Vec<String>) -> Elem
                     scope: "col", 
                     " "
                 },
-                (1..=*days).map(|i| rsx!{ th { class: "sticky top-0 p-2 bg-gray-100 dark:bg-gray-700 dark:text-gray-400", scope: "col", i.to_string() } } )
+                (1..=*days).map(|i| rsx!(th { class: "sticky top-0 p-2 bg-gray-100 dark:bg-gray-700 dark:text-gray-400", scope: "col", "{i}"} ))
             },
             tr {
                 th {
@@ -38,7 +38,7 @@ pub fn DateTable<'a>(cx: Scope, days: u32, weekday_arr: &'a Vec<String>) -> Elem
                     scope: "col", 
                     " "
                 },
-                weekday_arr.iter().map(|d| { rsx!( th {class: "sticky top-10 p-2 bg-gray-100 dark:bg-gray-700 dark:text-gray-400", scope: "col", d.clone()} ) })
+                weekday_arr.iter().map(|d| rsx!(th {class: "sticky top-10 p-2 bg-gray-100 dark:bg-gray-700 dark:text-gray-400", scope: "col", "{d}"} ))
             }    
         }
     ))
@@ -67,7 +67,7 @@ pub fn CountTable<'a>(
                     scope: "col", 
                     "午前"
                 },
-                morning.iter().map(|m| rsx!(th {class: "bg-indigo-50 border dark:bg-indigo-950 dark:text-gray-400 dark:border-gray-700", "{m}"}))
+                morning.iter().map(|m| rsx!(td {class: "bg-indigo-50 border dark:bg-indigo-950 dark:text-gray-400 dark:border-gray-700", "{m}"} ))
             }
             tr {
                 th {
@@ -80,7 +80,7 @@ pub fn CountTable<'a>(
                     scope: "col", 
                     "午後"
                 },
-                afternoon.iter().map(|a| rsx!(td {class: "bg-indigo-50 border dark:bg-indigo-950 dark:text-gray-400 dark:border-gray-700", "{a}"}))
+                afternoon.iter().map(|a| rsx!(td {class: "bg-indigo-50 border dark:bg-indigo-950 dark:text-gray-400 dark:border-gray-700", "{a}"} ))
             }
             tr {
                 th {
@@ -93,7 +93,7 @@ pub fn CountTable<'a>(
                     scope: "col", 
                     "夜"
                 },
-                evening.iter().map(|e| rsx!(td {class: "bg-indigo-50 border dark:bg-indigo-950 dark:text-gray-400 dark:border-gray-700", "{e}"}))
+                evening.iter().map(|e| rsx!(td {class: "bg-indigo-50 border dark:bg-indigo-950 dark:text-gray-400 dark:border-gray-700", "{e}"} ))
             }
         }
     ))

@@ -17,6 +17,8 @@ pub fn app(cx: Scope) -> Element {
     let month = use_state(&cx, || _month);
     let (days, weekday_arr) = get_date(&year, &month.get());
 
+    let rotate = if *is_rotate.get() {"[transform:rotateY(180deg)]"} else {""};
+
     let is_validate = |s: &String, range: std::ops::Range<u8>| {
         let Ok(numbers) = s.parse::<u8>() else { return false };
         if range.contains(&numbers) {
@@ -30,13 +32,9 @@ pub fn app(cx: Scope) -> Element {
         main {
             class: "flex min-h-screen items-center justify-center dark:bg-gray-800",
             div {
-                class: "group h-96 w-full sm:w-96 [perspective:1000px]",
+                class: "h-96 w-full sm:w-96 [perspective:1000px]",
                 div {
-                    class: if *is_rotate.get() {
-                        "relative h-full w-full rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 transition-all duration-500 [transform-style:preserve-3d] [transform:rotateY(180deg)]"
-                    } else {
-                        "relative h-full w-full rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 transition-all duration-500 [transform-style:preserve-3d] [translateZ(1px)] !backface-hidden"
-                    },
+                    class: "relative h-full w-full rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 transition-all duration-500 [transform-style:preserve-3d] {rotate}",
                     Front {
                         employee_num: employee_num.get(),
                         year: year,
