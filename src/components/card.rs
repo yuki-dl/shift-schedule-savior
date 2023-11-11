@@ -26,7 +26,7 @@ pub fn Front<'a, F>(
 ) -> Element where
     F: Fn(&String, std::ops::Range<u8>) -> bool
 {
-    let flag = f(employee_num, EMPLOYEENUM_MIN..EMPLOYEENUM_MAX) && f(month, 1..12);
+    let flag = f(employee_num, EMPLOYEENUM_MIN..EMPLOYEENUM_MAX) && f(month, 1..13);
     cx.render(rsx!(
         div {
             class: "absolute inset-0 h-full w-full rounded-xl object-cover shadow-xl shadow-black/40 !backface-hidden",
